@@ -32,10 +32,11 @@
 
     var ui = $.summernote.ui;
     var $editor = context.layoutInfo.editor;
+    var lang = options.langInfo;
 
     context.memo('button.embed', function () {
       var button = ui.button({
-        contents: '<i class="fa fa-share-square-o">',
+        contents: '<i class="note-icon-frame">',
         tooltip: lang.embedButton.tooltip,
         click: function (event) {
           self.show();
@@ -66,16 +67,16 @@
           context.triggerEvent('dialog.shown');
           self.$embedInput.focus();
 
-          self.$addButton.click(function (event) {
+          self.$addBtn.click(function (event) {
             event.preventDefault();
             deferred.resolve({
-              uri: self.embedInput.value
+              uri: self.$embedInput.value
             });
           });
         });
 
         ui.onDialogHidden(self.$dialog, function () {
-          self.$addButton.off('click');
+          self.$addBtn.off('click');
           if (deferred.state() === 'pending') {
             deferred.reject();
           }
@@ -87,9 +88,12 @@
 
     this.createDialog = function ($container) {
       var dialogOption = {
-        title: 'Title', // Change to dynamic
-        body: 'body', // Change body
-        footer: 'footer', // Change to button
+        title: lang.embedDialog.title,
+        body: '<div class="form-group">' +
+        '<label>' + lang.embedDialog.label + '</label>' +
+        '<input id="input-autocomplete" class="form-control" type="text" placeholder="' + lang.embedDialog.placeholder + '" />' +
+        '</div>',
+        footer: '<button href="#" id="btn-add" class="btn btn-primary">' + lang.embedDialog.button + '</button>',
         closeOnEscape: true
       };
 
@@ -104,8 +108,10 @@
 
       $div.css({
         'position': 'relative',
+        'overflow': 'hidden',
         'padding-top': '25px',
-        'padding-bottom': '56.25%',
+        'padding-bottom': '67.5%',
+        'margin-bottom': '10px',
         'height': '0'
       });
 
@@ -117,12 +123,19 @@
         'position': 'absolute',
         'top': '0',
         'left': '0',
-        'width': '60%',
-        'height': '60%'
+        'width': '100%',
+        'height': '100%'
       });
 
       $div.html($iframe);
       context.invoke('editor.insertNode', $div[0]);
+    };
+
+    // This events will be attached when editor is initialized.
+    this.events = {
+      // This will be called after modules are initialized.
+      'summernote.init': function(we, e) {
+      }
     };
 
     this.initialize = function() {
@@ -135,4 +148,23 @@
       self.$dialog.remove();
     };
   };
-});
+
+  $.extend(true, $.summernote, {
+    lang: {
+      'en-US': {
+        embedButton: {
+          tooltip: "Embed"
+        },
+        embedDialog: {
+          title: "Insert Embed",
+          label: "Place name or Address",
+          placeholder: "e.g. Eiffel Tower",
+          button: "Insert Map"
+        }
+      }
+    },
+    plugins: {
+      'embed': embedToSummernote
+    }
+  });
+}));

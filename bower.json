@@ -1,0 +1,15 @@
+{
+  "name": "summernote-embed-plugin",
+  "main": "summernote-embed-plugin.js",
+  "homepage": "https://github.com/annielmenezes/summernote-embed-plugin",
+  "authors": [
+    "Anniel Menezes <contato@annielmenezes.com>"
+  ],
+  "description": "Slideshare presentation and YouTube and Vimeo videos for Summernote Editor",
+  "keywords": [
+    "plugin",
+    "editor",
+    "summernote"
+  ],
+  "license": "MIT"
+}
