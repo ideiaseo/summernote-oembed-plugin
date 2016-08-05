@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Summernote Embed Pllugin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Summernote oEmbed Plugin">
+  <title>Summernote oEmbed Plugin</title>
   <!-- include jquery -->
   <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.js"></script>
 
@@ -15,22 +17,34 @@
   <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote.js"></script>
 
   <!-- include summernote plugin-->
-  <script type="text/javascript" src="../summernote-embed-plugin.js"></script>
+  <script type="text/javascript" src="../summernote-oembed-plugin.js"></script>
 
 </head>
 <body>
   <div class="container">
-    <h1>summernote-embed-plugin</h1>
-    <div id="summernote">Content</div>
+    <h1><strong>Summernote oEmbed Plugin</strong></h1>
+    <div id="summernote"></div>
   </div>
   <script type="text/javascript">
   $('#summernote').summernote({
+    placeholder: 'Começe a escrever agora',
+    minHeight: 120,
     toolbar: [
       ['style', ['bold', 'italic', 'underline', 'clear']],
       ['fontsize', ['fontsize']],
       ['para', ['ul', 'ol', 'paragraph']],
-      ['insert', ['link', 'picture', 'embed', 'table']]
-    ]
+      ['insert', ['link', 'picture', 'oembed', 'table']]
+    ],
+    callbacks: {
+        onPaste: function (e) {
+            var bufferText = ((e.originalEvent || e).clipboardData || window.clipboardData).getData('Text');
+            e.preventDefault();
+            // Firefox fix
+            setTimeout(function () {
+                document.execCommand('insertText', false, bufferText);
+            }, 10);
+        }
+    }
   });
 </script>
 </body>

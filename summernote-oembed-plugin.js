@@ -20,7 +20,7 @@
     for (var idx in options.toolbar) {
       // toolbar => [groupName, [list of button]]
       var buttons = options.toolbar[idx][1];
-      if ($.inArray('embed', buttons) > -1) {
+      if ($.inArray('oembed', buttons) > -1) {
         inToolbar = true;
         break;
       }
@@ -34,7 +34,10 @@
     var $editor = context.layoutInfo.editor;
     var lang = options.langInfo;
 
-    context.memo('button.embed', function () {
+    var OEMBED_PROVIDERS_URL = 'http://oembed.com/providers.json';
+    var PROVIDERS_CACHE;
+
+    context.memo('button.oembed', function () {
       var button = ui.button({
         contents: '<i class="note-icon-frame">',
         tooltip: lang.embedButton.tooltip,
@@ -50,7 +53,7 @@
       context.invoke('editor.saveRange');
 
       self.showEmbedDialog()
-        .then(function (data) {
+        .then(function showEmbedDialogCb (data) {
           context.invoke('editor.restoreRange');
           self.insertEmbedToEditor(data.uri);
           ui.hideDialog(self.$dialog);
@@ -60,14 +63,15 @@
     };
 
     this.showEmbedDialog = function () {
+      self.disableAddButton();
       self.$embedInput.value = '';
 
       return $.Deferred(function (deferred) {
-        ui.onDialogShown(self.$dialog, function () {
+        ui.onDialogShown(self.$dialog, function dialogShownCb () {
           context.triggerEvent('dialog.shown');
           self.$embedInput.focus();
 
-          self.$addBtn.click(function (event) {
+          self.$addBtn.on('click', function addEmbedCb (event) {
             event.preventDefault();
             deferred.resolve({
               uri: self.$embedInput.value
@@ -75,7 +79,7 @@
           });
         });
 
-        ui.onDialogHidden(self.$dialog, function () {
+        ui.onDialogHidden(self.$dialog, function dialogHiddenCb () {
           self.$addBtn.off('click');
           if (deferred.state() === 'pending') {
             deferred.reject();
@@ -101,6 +105,16 @@
       self.$addBtn = self.$dialog.find('#btn-add');
       self.$embedInput = self.$dialog.find('#input-autocomplete')[0];
       self.$embedContainer = self.$dialog.find('#embed-in-dialog')[0];
+    };
+
+    this.enableAddButton = function() {
+      if (self.$embedInput.value && self.$embedInput.value.length > 0) {
+        self.$addBtn.attr("disabled", false);
+      }
+    };
+
+    this.disableAddButton = function() {
+      self.$addBtn.attr("disabled", true);
     };
 
     this.insertEmbedToEditor = function (iframe) {
@@ -131,10 +145,23 @@
       context.invoke('editor.insertNode', $div[0]);
     };
 
+    this.initOembed = function () {
+      // TODO: Buscar a lista de providers a partir da constante OEMBED_PROVIDERS_URL
+      // e popupar o objeto de consulta
+      // Chamar essa função no success do getProviders
+      $.getJSON(OEMBED_PROVIDERS_URL, function loadProvidersCb (data) {
+        console.log(data);
+        self.enableAddButton();
+      });
+
+      self.$embedInput.addEventListener('input', self.enableAddButton);
+    };
+
     // This events will be attached when editor is initialized.
     this.events = {
       // This will be called after modules are initialized.
       'summernote.init': function(we, e) {
+        self.initOembed();
       }
     };
 
@@ -157,14 +184,14 @@
         },
         embedDialog: {
           title: "Insert Embed",
-          label: "Place name or Address",
-          placeholder: "e.g. Eiffel Tower",
-          button: "Insert Map"
+          label: "Place your embed url link",
+          placeholder: "e.g. https://www.youtube.com/watch?v=sJ9HR-kcZHg",
+          button: "Insert"
         }
       }
     },
     plugins: {
-      'embed': embedToSummernote
+      'oembed': embedToSummernote
     }
   });
 }));
