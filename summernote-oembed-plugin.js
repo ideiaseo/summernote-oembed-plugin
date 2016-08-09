@@ -35,7 +35,7 @@
     var lang = options.langInfo;
 
     var oEmbedOptions = {
-      service: '../providers.json'
+      service: 'https://noembed.com/'
     };
 
     options.oEmbed = $.extend(oEmbedOptions, options.oEmbed);
