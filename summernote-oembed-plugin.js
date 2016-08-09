@@ -34,13 +34,16 @@
     var $editor = context.layoutInfo.editor;
     var lang = options.langInfo;
 
-    var OEMBED_PROVIDERS_URL = 'http://oembed.com/providers.json';
-    var PROVIDERS_CACHE;
+    var oEmbedOptions = {
+      service: '../providers.json'
+    };
+
+    options.oEmbed = $.extend(oEmbedOptions, options.oEmbed);
 
     context.memo('button.oembed', function () {
       var button = ui.button({
         contents: '<i class="note-icon-frame">',
-        tooltip: lang.embedButton.tooltip,
+        tooltip: lang.oEmbedButton.tooltip,
         click: function (event) {
           self.show();
         }
@@ -92,12 +95,13 @@
 
     this.createDialog = function ($container) {
       var dialogOption = {
-        title: lang.embedDialog.title,
+        title: lang.oEmbedDialog.title,
         body: '<div class="form-group">' +
-        '<label>' + lang.embedDialog.label + '</label>' +
-        '<input id="input-autocomplete" class="form-control" type="text" placeholder="' + lang.embedDialog.placeholder + '" />' +
-        '</div>',
-        footer: '<button href="#" id="btn-add" class="btn btn-primary">' + lang.embedDialog.button + '</button>',
+        '<label>' + lang.oEmbedDialog.label + '</label>' +
+        '<input id="input-autocomplete" class="form-control" type="text" placeholder="' + lang.oEmbedDialog.placeholder + '" />' +
+        '</div>' +
+        '<div id="embed-in-dialog" style="height: 300px;"></div>',
+        footer: '<button href="#" id="btn-add" class="btn btn-primary">' + lang.oEmbedDialog.button + '</button>',
         closeOnEscape: true
       };
 
@@ -119,50 +123,25 @@
 
     this.insertEmbedToEditor = function (iframe) {
       var $div = $('<div>');
+      var $iframe;
 
-      $div.css({
-        'position': 'relative',
-        'overflow': 'hidden',
-        'padding-top': '25px',
-        'padding-bottom': '67.5%',
-        'margin-bottom': '10px',
-        'height': '0'
-      });
-
-      $iframe = $(iframe, {
-        height: '250px'
-      });
-
-      $iframe.css({
-        'position': 'absolute',
-        'top': '0',
-        'left': '0',
-        'width': '100%',
-        'height': '100%'
-      });
-
-      $div.html($iframe);
-      context.invoke('editor.insertNode', $div[0]);
+      $.getJSON(options.oEmbed.service+'?url='+iframe)
+        .done(function (data) {
+          $div.html(data.html);
+          context.invoke('editor.insertNode', $div[0]);
+          self.$embedContainer.innerHTML = '';
+        });
     };
 
     this.initOembed = function () {
-      // TODO: Buscar a lista de providers a partir da constante OEMBED_PROVIDERS_URL
-      // e popupar o objeto de consulta
-      // Chamar essa função no success do getProviders
-      $.getJSON(OEMBED_PROVIDERS_URL, function loadProvidersCb (data) {
-        console.log(data);
-        self.enableAddButton();
+
+      self.$embedInput.addEventListener('input', function (event) {
+        $.getJSON(options.oEmbed.service+'?url='+this.value)
+          .done(function (data) {
+            self.$embedContainer.innerHTML = data.html;
+            self.enableAddButton();
+          });
       });
-
-      self.$embedInput.addEventListener('input', self.enableAddButton);
-    };
-
-    // This events will be attached when editor is initialized.
-    this.events = {
-      // This will be called after modules are initialized.
-      'summernote.init': function(we, e) {
-        self.initOembed();
-      }
     };
 
     this.initialize = function() {
@@ -174,18 +153,26 @@
       ui.hideDialog(self.$dialog);
       self.$dialog.remove();
     };
+
+    this.events = {
+      // This will be called after modules are initialized.
+      'summernote.init': function(we, e) {
+        self.initOembed();
+      }
+    };
+
   };
 
   $.extend(true, $.summernote, {
     lang: {
       'en-US': {
-        embedButton: {
+        oEmbedButton: {
           tooltip: "Embed"
         },
-        embedDialog: {
+        oEmbedDialog: {
           title: "Insert Embed",
           label: "Place your embed url link",
-          placeholder: "e.g. https://www.youtube.com/watch?v=sJ9HR-kcZHg",
+          placeholder: "https://www.youtube.com/watch?v=sJ9HR-kcZHg",
           button: "Insert"
         }
       }
