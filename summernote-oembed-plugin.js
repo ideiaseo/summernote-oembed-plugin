@@ -176,7 +176,7 @@
           placeholder: "E.g. https://www.youtube.com/watch?v=sJ9HR-kcZHg",
           button: "Insert"
         }
-      }
+      },
       'pt-BR': {
         oEmbedButton: {
           tooltip: "Adicionar Embed"
