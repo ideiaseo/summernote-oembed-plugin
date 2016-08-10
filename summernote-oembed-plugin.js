@@ -100,7 +100,7 @@
         '<label>' + lang.oEmbedDialog.label + '</label>' +
         '<input id="input-autocomplete" class="form-control" type="text" placeholder="' + lang.oEmbedDialog.placeholder + '" />' +
         '</div>' +
-        '<div id="embed-in-dialog" style="min-height: 300px;"></div>',
+        '<div id="embed-in-dialog"></div>',
         footer: '<button href="#" id="btn-add" class="btn btn-primary">' + lang.oEmbedDialog.button + '</button>',
         closeOnEscape: true
       };
@@ -123,7 +123,6 @@
 
     this.insertEmbedToEditor = function (iframe) {
       var $div = $('<div>');
-      var $iframe;
 
       $.getJSON(options.oEmbed.service+'?url='+iframe)
         .done(function (data) {
@@ -136,11 +135,13 @@
     this.initOembed = function () {
 
       self.$embedInput.addEventListener('input', function (event) {
-        $.getJSON(options.oEmbed.service+'?url='+this.value)
+        setTimeout(function () {
+          $.getJSON(options.oEmbed.service+'?url='+this.value)
           .done(function (data) {
             self.$embedContainer.innerHTML = data.html;
             self.enableAddButton();
           });
+        }, 100);
       });
     };
 
