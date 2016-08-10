@@ -135,8 +135,9 @@
     this.initOembed = function () {
 
       self.$embedInput.addEventListener('input', function (event) {
+        var url = this.value;
         setTimeout(function () {
-          $.getJSON(options.oEmbed.service+'?url='+this.value)
+          $.getJSON(options.oEmbed.service+'?url='+url)
           .done(function (data) {
             self.$embedContainer.innerHTML = data.html;
             self.enableAddButton();
