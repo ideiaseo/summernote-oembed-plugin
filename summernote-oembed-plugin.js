@@ -124,6 +124,7 @@
     this.insertEmbedToEditor = function (iframe) {
       var $div = $('<div>');
 
+
       $.getJSON(options.oEmbed.service+'?url='+iframe)
         .done(function (data) {
           $div.html(self.normalizeEmbed(data.html));
@@ -169,8 +170,14 @@
     this.initOembed = function () {
 
       self.$embedInput.addEventListener('input', function (event) {
+
         var url = this.value;
+
         setTimeout(function () {
+          if(options.oEmbed.spinner){
+            self.$embedContainer.innerHTML = options.oEmbed.spinner;
+          }
+
           $.getJSON(options.oEmbed.service+'?url='+url)
           .done(function (data) {
 
