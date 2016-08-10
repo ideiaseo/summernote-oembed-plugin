@@ -100,7 +100,7 @@
         '<label>' + lang.oEmbedDialog.label + '</label>' +
         '<input id="input-autocomplete" class="form-control" type="text" placeholder="' + lang.oEmbedDialog.placeholder + '" />' +
         '</div>' +
-        '<div id="embed-in-dialog" style="height: 300px;"></div>',
+        '<div id="embed-in-dialog" style="min-height: 300px;"></div>',
         footer: '<button href="#" id="btn-add" class="btn btn-primary">' + lang.oEmbedDialog.button + '</button>',
         closeOnEscape: true
       };
