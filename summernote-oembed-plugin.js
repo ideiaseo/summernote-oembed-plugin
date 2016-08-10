@@ -172,10 +172,21 @@
         oEmbedDialog: {
           title: "Insert Embed",
           label: "Place your embed url link",
-          placeholder: "https://www.youtube.com/watch?v=sJ9HR-kcZHg",
+          placeholder: "E.g. https://www.youtube.com/watch?v=sJ9HR-kcZHg",
           button: "Insert"
         }
       }
+      'pt-BR': {
+        oEmbedButton: {
+          tooltip: "Adicionar Embed"
+        },
+        oEmbedDialog: {
+          title: "Inserir Embed",
+          label: "Coloque a url do seu embed",
+          placeholder: "Ex.: https://www.youtube.com/watch?v=sJ9HR-kcZHg",
+          button: "Inserir"
+        }
+      },
     },
     plugins: {
       'oembed': embedToSummernote
